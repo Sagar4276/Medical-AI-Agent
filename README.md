@@ -4,7 +4,6 @@
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 [![Flask](https://img.shields.io/badge/Flask-2.3+-green.svg)](https://flask.palletsprojects.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
 ## 🌟 **Live Demo**
@@ -306,17 +305,6 @@ python initialize_database.py
 - Restart Flask server
 - Check internet connection for LLM calls
 
-## 🤝 **Contributing**
-
-We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-### Areas for Contribution
-- 📚 Additional medical domains
-- 🌍 Multi-language support
-- 🔐 User authentication
-- 📱 Mobile app development
-- 🐳 Docker containerization
-- 🧪 More comprehensive testing
 
 ## 📈 **Roadmap**
 
@@ -337,9 +325,6 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 - 📧 **Contact**: Create an issue for questions
 - 📖 **Documentation**: Check code comments and README
 
-## 📜 **License**
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 **Acknowledgments**
 
