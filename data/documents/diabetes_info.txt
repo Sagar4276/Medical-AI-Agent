@@ -1,0 +1,63 @@
+# Diabetes Mellitus
+
+## Overview
+Diabetes mellitus is a chronic metabolic disorder characterized by elevated blood glucose levels resulting from defects in insulin secretion, insulin action, or both. There are several types of diabetes, with Type 1, Type 2, and gestational diabetes being the most common.
+
+## Types of Diabetes
+1. Type 1 Diabetes: An autoimmune condition where the body's immune system destroys insulin-producing beta cells in the pancreas.
+2. Type 2 Diabetes: A progressive condition where the body becomes resistant to the normal effects of insulin or loses the capacity to produce sufficient insulin in the pancreas.
+3. Gestational Diabetes: Occurs during pregnancy and usually resolves after giving birth.
+4. Other types: Including monogenic diabetes and secondary diabetes.
+
+## Symptoms
+Common symptoms of diabetes include:
+- Increased thirst and urination
+- Extreme hunger
+- Unexplained weight loss
+- Fatigue
+- Irritability
+- Blurred vision
+- Slow-healing sores
+- Frequent infections
+
+## Diagnosis
+Diabetes is diagnosed using several tests:
+- Fasting Plasma Glucose Test: ≥126 mg/dL (7.0 mmol/L)
+- Oral Glucose Tolerance Test: ≥200 mg/dL (11.1 mmol/L) after 2 hours
+- Hemoglobin A1c (HbA1c): ≥6.5% (48 mmol/mol)
+- Random Plasma Glucose Test: ≥200 mg/dL (11.1 mmol/L) with symptoms
+
+## Treatment
+Treatment approaches vary by diabetes type:
+
+### Type 1 Diabetes
+- Insulin therapy (multiple daily injections or insulin pump)
+- Carbohydrate counting
+- Regular blood glucose monitoring
+- Healthy eating and exercise
+
+### Type 2 Diabetes
+- Lifestyle modifications (diet, exercise, weight management)
+- Oral medications (metformin usually first-line)
+- Injectable medications (GLP-1 receptor agonists)
+- Insulin therapy if needed
+- Blood glucose monitoring
+
+## Complications
+Uncontrolled diabetes can lead to various complications:
+- Cardiovascular disease
+- Nephropathy (kidney disease)
+- Neuropathy (nerve damage)
+- Retinopathy (eye damage)
+- Foot problems
+- Skin conditions
+- Hearing impairment
+- Alzheimer's disease
+
+## Prevention
+For Type 2 diabetes, prevention strategies include:
+- Maintaining a healthy weight
+- Regular physical activity
+- Balanced diet rich in fruits, vegetables, and whole grains
+- Limiting refined carbohydrates and processed foods
+- Regular health check-ups

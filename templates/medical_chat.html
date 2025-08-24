@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical AI Assistant - RAG System</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Custom styles to complement Tailwind */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Custom scrollbar for a more polished look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f8fafc; /* slate-50 */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; /* slate-300 */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; /* slate-400 */
+        }
+
+        /* Animation for chat bubbles appearing */
+        @keyframes pop-in {
+            0% {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        .chat-bubble {
+            animation: pop-in 0.3s ease-out forwards;
+        }
+        
+        /* Typing indicator animation */
+        .typing-dot {
+            animation: typing-blink 1.4s infinite both;
+        }
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes typing-blink {
+            0% { background-color: rgba(100, 116, 139, 0.3); }
+            50% { background-color: rgba(100, 116, 139, 0.8); }
+            100% { background-color: rgba(100, 116, 139, 0.3); }
+        }
+        
+        /* Basic Markdown styling for AI responses */
+        .ai-response p { margin-bottom: 0.75rem; }
+        .ai-response ul, .ai-response ol { padding-left: 1.25rem; margin-bottom: 0.75rem; }
+        .ai-response li { margin-bottom: 0.25rem; }
+        .ai-response h1, .ai-response h2, .ai-response h3 { font-weight: 600; margin-bottom: 0.5rem; margin-top: 1rem; }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-slate-50 to-slate-100 flex flex-col h-screen antialiased">
+
+    <div class="flex-1 flex flex-col max-w-4xl w-full mx-auto p-4 md:p-6 lg:p-8">
+        
+        <header class="pb-6 border-b border-slate-200">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="p-3 bg-blue-100 rounded-full shadow-sm">
+                        <svg class="w-8 h-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12a7.5 7.5 0 1 1-15 0 7.5 7.5 0 0 1 15 0Z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-slate-800">Medical AI Assistant 🩺</h1>
+                        <p class="text-sm text-slate-500">Powered by a Proper RAG System | For Educational Purposes Only</p>
+                    </div>
+                </div>
+                <button onclick="showStats()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-medium transition-colors">
+                    📊 Stats
+                </button>
+            </div>
+        </header>
+
+        <main id="chat-window" class="flex-1 overflow-y-auto py-8 space-y-8">
+            <div class="chat-bubble flex items-start gap-4">
+                <div class="flex-shrink-0 w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center">
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12H3m18 0h-.75" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 3.75V3m0 18v-.75" /><path stroke-linecap="round" stroke-linejoin="round" d="M5.625 5.625L5.25 5.25m13.5 13.5l-.375-.375" /><path stroke-linecap="round" stroke-linejoin="round" d="M18.375 5.625l.375-.375m-13.5 13.5l.375.375" /></svg>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow-sm max-w-lg">
+                    <p class="text-slate-700">
+                        Hello! I'm your Medical AI Assistant. I can help you with questions about medical conditions, symptoms, and treatments based on my knowledge base.
+                    </p>
+                    <p class="text-slate-700 mt-2">
+                        How can I help you today? You can start by asking something like:
+                    </p>
+                    <div class="mt-4 space-y-2">
+                        <button onclick="sendPresetQuestion('What are the common symptoms of Type 2 diabetes?')" class="w-full text-left p-3 bg-slate-50 hover:bg-slate-100 rounded-lg text-sm text-slate-600 transition-colors">"What are the common symptoms of Type 2 diabetes?"</button>
+                        <button onclick="sendPresetQuestion('Explain the treatment options for migraines.')" class="w-full text-left p-3 bg-slate-50 hover:bg-slate-100 rounded-lg text-sm text-slate-600 transition-colors">"Explain the treatment options for migraines."</button>
+                    </div>
+                </div>
+            </div>
+            
+            </main>
+
+        <footer class="pt-4">
+            <form id="message-form" class="relative group">
+                <textarea 
+                    id="message-input"
+                    class="w-full p-4 pr-20 bg-white border border-slate-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none resize-none transition-all duration-300 group-focus-within:shadow-lg"
+                    placeholder="Ask a medical question..."
+                    rows="1"
+                ></textarea>
+                <button 
+                    type="submit" 
+                    class="absolute right-3 top-1/2 -translate-y-1/2 p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-transform duration-200 ease-in-out transform active:scale-95 disabled:bg-slate-300 disabled:cursor-not-allowed"
+                    id="send-button"
+                >
+                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
+                    </svg>
+                </button>
+            </form>
+        </footer>
+    </div>
+    
+    <div id="stats-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-2xl">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-slate-800">System Statistics</h3>
+                <button onclick="hideStats()" class="text-slate-400 hover:text-slate-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div id="stats-content" class="space-y-3">
+                <div class="text-center text-slate-500">Loading stats...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM element references
+        const chatWindow = document.getElementById('chat-window');
+        const messageForm = document.getElementById('message-form');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const statsModal = document.getElementById('stats-modal');
+        const statsContent = document.getElementById('stats-content');
+        
+        // Initialize Showdown converter
+        const markdownConverter = new showdown.Converter();
+        
+        // SVG icons for avatars
+        const aiIcon = `<svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" /><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12H3m18 0h-.75" /><path stroke-linecap="round" stroke-linejoin="round" d="M12 3.75V3m0 18v-.75" /><path stroke-linecap="round" stroke-linejoin="round" d="M5.625 5.625L5.25 5.25m13.5 13.5l-.375-.375" /><path stroke-linecap="round" stroke-linejoin="round" d="M18.375 5.625l.375-.375m-13.5 13.5l.375.375" /></svg>`;
+        const userIcon = `<svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>`;
+
+        // --- Event Listeners ---
+        messageForm.addEventListener('submit', handleSendMessage);
+        messageInput.addEventListener('input', autoResizeTextarea);
+        messageInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage(e);
+            }
+        });
+
+        // --- Core Functions ---
+        async function handleSendMessage(e) {
+            e.preventDefault();
+            const message = messageInput.value.trim();
+            if (!message) return;
+
+            appendMessage('user', message);
+            messageInput.value = '';
+            autoResizeTextarea();
+            messageInput.disabled = true;
+            sendButton.disabled = true;
+
+            const typingIndicator = showTypingIndicator();
+
+            try {
+                const response = await fetch('/api/query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: message }),
+                });
+
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                
+                const result = await response.json();
+                
+                // MODIFICATION: Remove typing indicator before starting the response stream
+                typingIndicator.remove();
+                
+                if (result.success) {
+                    // MODIFICATION: Await the appendMessage function to ensure streaming finishes
+                    await appendMessage('ai', result.answer, result.sources, result.response_time);
+                } else {
+                    await appendMessage('ai', `Sorry, I encountered an error: ${result.error}`);
+                }
+
+            } catch (error) {
+                console.error("Error fetching from backend:", error);
+                // MODIFICATION: Remove typing indicator here as well in case of an error
+                typingIndicator.remove();
+                await appendMessage('ai', "I'm sorry, but I encountered an error connecting to my knowledge base. Please try again later. 🛠️");
+            } finally {
+                // MODIFICATION: This block now correctly waits for the streaming to finish
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+                messageInput.focus();
+                scrollToBottom();
+            }
+        }
+
+        // MODIFICATION: A helper function to create a delay
+        const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+        // MODIFICATION: New function to stream text into an element
+        async function streamText(element, markdownText) {
+            const text = markdownText || " ";
+            // Split by space/newline to type word by word for a more natural effect
+            const words = text.split(/(\s+)/);
+            let builtText = '';
+            
+            for (let i = 0; i < words.length; i++) {
+                builtText += words[i];
+                // The '▌' character simulates a blinking cursor at the end of the text
+                element.innerHTML = markdownConverter.makeHtml(builtText + '▌');
+                scrollToBottom();
+                // Adjust delay for a more natural typing rhythm (faster for spaces)
+                const delay = words[i].trim() === '' ? 20 : 60;
+                await sleep(delay); 
+            }
+
+            // Final render without the cursor
+            element.innerHTML = markdownConverter.makeHtml(builtText);
+            scrollToBottom();
+        }
+        
+        // MODIFICATION: appendMessage is now an async function to handle streaming
+        async function appendMessage(sender, text, sources = [], responseTime) {
+            const isUser = sender === 'user';
+            
+            const messageBubble = document.createElement('div');
+            messageBubble.classList.add('chat-bubble', 'flex', 'items-start', 'gap-4');
+            if (isUser) messageBubble.classList.add('justify-end');
+
+            const avatar = `<div class="flex-shrink-0 w-10 h-10 ${isUser ? 'bg-slate-200 text-slate-600' : 'bg-blue-500 text-white'} rounded-full flex items-center justify-center shadow-sm">${isUser ? userIcon : aiIcon}</div>`;
+
+            const messageContent = document.createElement('div');
+            messageContent.classList.add(isUser ? 'bg-teal-600' : 'bg-white', isUser ? 'text-white' : 'text-slate-700', 'p-4', 'rounded-lg', 'shadow-sm', 'max-w-lg');
+            
+            if (isUser) {
+                const formattedText = text.replace(/\n/g, '<br>');
+                messageContent.innerHTML = `<div class="">${formattedText}</div>`;
+                messageBubble.innerHTML = messageContent.outerHTML + avatar;
+                chatWindow.appendChild(messageBubble);
+            } else {
+                // For AI, create the bubble structure first
+                const responseContainer = document.createElement('div');
+                responseContainer.classList.add('ai-response');
+                messageContent.appendChild(responseContainer);
+                
+                messageBubble.insertAdjacentHTML('afterbegin', avatar);
+                messageBubble.appendChild(messageContent);
+                chatWindow.appendChild(messageBubble);
+
+                // Now stream the text into the prepared container
+                await streamText(responseContainer, text);
+                
+                // Add sources and metadata after the text has finished streaming
+                if (sources.length > 0 || responseTime) {
+                    const metaContainer = document.createElement('div');
+                    metaContainer.classList.add('mt-4', 'pt-3', 'border-t', 'border-slate-100', 'text-xs');
+                    
+                    let sourcesHTML = '';
+                    if (sources && sources.length > 0) {
+                        sourcesHTML += '<h4 class="font-semibold text-slate-500 mb-2">📚 SOURCES</h4><div class="flex flex-wrap gap-2">';
+                        sources.forEach(source => {
+                            sourcesHTML += `<span class="px-2 py-1 bg-slate-100 text-slate-600 rounded-md">${source}</span>`;
+                        });
+                        sourcesHTML += '</div>';
+                    }
+                    
+                    let timeHTML = '';
+                    if (responseTime) {
+                        timeHTML = `<div class="text-slate-400 mt-2 text-right">⏱️ ${responseTime.toFixed(2)}s</div>`;
+                    }
+                    
+                    metaContainer.innerHTML = sourcesHTML + timeHTML;
+                    messageContent.appendChild(metaContainer);
+                }
+            }
+
+            scrollToBottom();
+        }
+
+        function showTypingIndicator() {
+            const typingBubble = document.createElement('div');
+            typingBubble.id = 'typing-indicator';
+            typingBubble.classList.add('chat-bubble', 'flex', 'items-start', 'gap-4');
+            typingBubble.innerHTML = `<div class="flex-shrink-0 w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center shadow-sm">${aiIcon}</div><div class="bg-white p-4 rounded-lg shadow-sm flex items-center space-x-2"><div class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></div><div class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></div><div class="w-2 h-2 bg-slate-400 rounded-full typing-dot"></div></div>`;
+            chatWindow.appendChild(typingBubble);
+            scrollToBottom();
+            return typingBubble;
+        }
+
+        function sendPresetQuestion(question) {
+            messageInput.value = question;
+            autoResizeTextarea();
+            handleSendMessage({ preventDefault: () => {} }); // Use a mock event object
+        }
+
+        // --- Stats Modal Functions ---
+        async function showStats() {
+            statsModal.classList.remove('hidden');
+            statsContent.innerHTML = '<div class="text-center text-slate-500">Loading stats...</div>';
+            try {
+                const response = await fetch('/api/stats');
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const stats = result.stats;
+                    statsContent.innerHTML = `
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="text-center p-3 bg-slate-50 rounded-lg">
+                                <div class="text-xl font-bold text-blue-600">${stats.documents_indexed}</div>
+                                <div class="text-sm text-slate-600">Documents Indexed</div>
+                            </div>
+                            <div class="text-center p-3 bg-slate-50 rounded-lg">
+                                <div class="text-xl font-bold text-green-600">${stats.embedding_dimension}</div>
+                                <div class="text-sm text-slate-600">Embedding Dim</div>
+                            </div>
+                        </div>
+                        <div class="mt-4 space-y-2 text-sm text-slate-600">
+                            <div class="flex justify-between"><strong>Vector Store:</strong> <span>${stats.vector_store}</span></div>
+                            <div class="flex justify-between"><strong>LLM Model:</strong> <span>${stats.llm_model}</span></div>
+                            <div class="flex justify-between"><strong>Retrieval:</strong> <span>${stats.retrieval_method}</span></div>
+                        </div>
+                    `;
+                } else {
+                    statsContent.innerHTML = `<div class="text-red-500 text-center">Error loading stats: ${result.error}</div>`;
+                }
+            } catch (error) {
+                statsContent.innerHTML = `<div class="text-red-500 text-center">Error loading stats: ${error.message}</div>`;
+            }
+        }
+
+        function hideStats() {
+            statsModal.classList.add('hidden');
+        }
+
+        // --- Utility Functions ---
+        function autoResizeTextarea() {
+            messageInput.style.height = 'auto';
+            const scrollHeight = messageInput.scrollHeight;
+            const maxHeight = 200; 
+            messageInput.style.height = `${Math.min(scrollHeight, maxHeight)}px`;
+        }
+
+        function scrollToBottom() {
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
+        // Close modal when clicking outside
+        statsModal.addEventListener('click', (e) => {
+            if (e.target.id === 'stats-modal') {
+                hideStats();
+            }
+        });
+    </script>
+</body>
+</html>

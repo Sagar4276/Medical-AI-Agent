@@ -1,0 +1,136 @@
+# Medical RAG System - .gitignore
+
+# ===== ENVIRONMENT & SECRETS =====
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+*.env
+
+# API Keys and secrets
+secrets.txt
+config.secret
+api_keys.json
+
+# ===== PYTHON =====
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+.env/
+
+# ===== DATA & CACHE =====
+# Vector database files (these are large and can be regenerated)
+data/vectorstore/
+data/cache/
+*.sqlite3
+*.db
+
+# Log files
+logs/
+*.log
+
+# Temporary data
+temp/
+tmp/
+*.tmp
+
+# ===== DEVELOPMENT FILES =====
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+
+# ===== SYSTEM FILES =====
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*.lnk
+
+# Linux
+*~
+
+# ===== PROJECT SPECIFIC =====
+# Streamlit files (old implementation)
+.streamlit/
+STREAMLIT_*.md
+streamlit_*.py
+
+# Working files
+working_*.py
+working_*.html
+scratch/
+drafts/
+
+# Large models or downloads
+models/
+downloads/
+*.zip
+*.tar.gz
+
+# Backup files
+*.bak
+*.backup
+backup_*
+
+# Generated reports
+*_REPORT.md
+status_*.md
+
+# ===== KEEP IMPORTANT FILES =====
+# Force include these important files even if they match patterns above
+!data/documents/
+!data/samples/
+!data/README.md
+!requirements.txt
+!README.md
+!.gitignore
