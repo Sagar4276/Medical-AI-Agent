@@ -113,7 +113,7 @@ if __name__ == '__main__':
     # Initialize RAG system
     if initialize_rag():
         # Get port from environment (for hosting services like Render)
-        port = int(os.environ.get('FLASK_PORT', 5000))
+        port = int(os.environ.get('PORT', 5000))
         debug_mode = os.environ.get('FLASK_ENV') != 'production'
         
         print(f"🚀 Starting Flask server on port {port}")
