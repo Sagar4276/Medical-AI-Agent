@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glaucoma Corpus Builder - Medical AI Agent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen" x-data="corpusBuilder()">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg border-b-4 border-blue-500">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-4">
+                    <i class="fas fa-database text-blue-600 text-2xl"></i>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">Glaucoma Corpus Builder</h1>
+                        <p class="text-sm text-gray-600">Medical AI Research Data Extraction</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="bg-blue-100 hover:bg-blue-200 px-4 py-2 rounded-lg text-blue-700 transition-colors">
+                        <i class="fas fa-comments mr-2"></i>Chat Interface
+                    </a>
+                    <button @click="checkStatus" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors">
+                        <i class="fas fa-heartbeat mr-2"></i>Health Check
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Status Panel -->
+        <div class="bg-white rounded-xl shadow-lg mb-8 border border-gray-200">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">
+                    <i class="fas fa-chart-pulse text-blue-600 mr-2"></i>System Status
+                </h2>
+                <p class="text-gray-600">Monitor API connections and system health</p>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-4 text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-blue-100 text-sm">Total APIs</p>
+                                <p class="text-2xl font-bold" x-text="status.total_apis || '0'"></p>
+                            </div>
+                            <i class="fas fa-plug text-blue-200 text-2xl"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-4 text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-green-100 text-sm">Configured</p>
+                                <p class="text-2xl font-bold" x-text="status.configured_apis || '0'"></p>
+                            </div>
+                            <i class="fas fa-check-circle text-green-200 text-2xl"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-4 text-white">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-purple-100 text-sm">Healthy</p>
+                                <p class="text-2xl font-bold" x-text="status.healthy_apis || '0'"></p>
+                            </div>
+                            <i class="fas fa-heart text-purple-200 text-2xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Status Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" x-show="Object.keys(status.api_status || {}).length > 0">
+                    <template x-for="(apiStatus, apiName) in status.api_status" :key="apiName">
+                        <div class="border rounded-lg p-4" :class="apiStatus.healthy ? 'border-green-200 bg-green-50' : (apiStatus.configured ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-gray-50')">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="font-semibold capitalize" x-text="apiName.replace('_', ' ')"></h4>
+                                <div class="flex items-center space-x-2">
+                                    <span class="w-3 h-3 rounded-full" :class="apiStatus.healthy ? 'bg-green-400' : (apiStatus.configured ? 'bg-red-400' : 'bg-gray-400')"></span>
+                                    <span class="text-xs font-medium" :class="apiStatus.healthy ? 'text-green-700' : (apiStatus.configured ? 'text-red-700' : 'text-gray-700')" x-text="apiStatus.healthy ? 'HEALTHY' : (apiStatus.configured ? 'ERROR' : 'NOT CONFIGURED')"></span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-2" x-text="apiStatus.description"></p>
+                            <div x-show="apiStatus.error" class="text-xs text-red-600 font-mono bg-red-100 p-2 rounded" x-text="apiStatus.error"></div>
+                            <div x-show="!apiStatus.configured && apiStatus.env_key" class="text-xs text-gray-500">
+                                <span>Environment variable: </span><code class="bg-gray-200 px-1 rounded" x-text="apiStatus.env_key"></code>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </div>
+
+        <!-- Corpus Builder Panel -->
+        <div class="bg-white rounded-xl shadow-lg border border-gray-200">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">
+                    <i class="fas fa-cogs text-blue-600 mr-2"></i>Build Glaucoma Corpus
+                </h2>
+                <p class="text-gray-600">Extract and process glaucoma research data from multiple medical databases</p>
+            </div>
+            
+            <div class="p-6">
+                <!-- Configuration Form -->
+                <form @submit.prevent="buildCorpus" class="space-y-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- Data Sources -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Data Sources</label>
+                            <div class="space-y-2">
+                                <template x-for="source in availableSources" :key="source.id">
+                                    <label class="flex items-center space-x-3 p-3 border rounded-lg hover:bg-gray-50 cursor-pointer">
+                                        <input type="checkbox" :value="source.id" x-model="config.sources" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                        <div class="flex-1">
+                                            <span class="text-sm font-medium text-gray-900" x-text="source.name"></span>
+                                            <p class="text-xs text-gray-500" x-text="source.description"></p>
+                                        </div>
+                                    </label>
+                                </template>
+                            </div>
+                        </div>
+
+                        <!-- Search Parameters -->
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Max Results per Source</label>
+                                <input type="number" x-model="config.max_results" min="10" max="5000" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Search Years Back</label>
+                                <input type="number" x-model="config.years_back" min="1" max="20" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Minimum Relevance Score</label>
+                                <input type="number" x-model="config.min_relevance" min="0" max="100" step="0.1" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Minimum Quality Score</label>
+                                <input type="number" x-model="config.min_quality" min="0" max="1" step="0.01" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Advanced Options -->
+                    <div class="border-t pt-6">
+                        <h3 class="text-lg font-medium text-gray-800 mb-4">Advanced Options</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <label class="flex items-center space-x-3">
+                                <input type="checkbox" x-model="config.remove_duplicates" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <span class="text-sm text-gray-700">Remove Duplicates</span>
+                            </label>
+                            
+                            <label class="flex items-center space-x-3">
+                                <input type="checkbox" x-model="config.extract_entities" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <span class="text-sm text-gray-700">Extract Medical Entities</span>
+                            </label>
+                            
+                            <label class="flex items-center space-x-3">
+                                <input type="checkbox" x-model="config.calculate_statistics" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <span class="text-sm text-gray-700">Generate Statistics</span>
+                            </label>
+                            
+                            <label class="flex items-center space-x-3">
+                                <input type="checkbox" x-model="config.include_metadata" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <span class="text-sm text-gray-700">Include Metadata</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="flex justify-end space-x-4">
+                        <button type="button" @click="checkStatus" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
+                            <i class="fas fa-sync mr-2"></i>Refresh Status
+                        </button>
+                        <button type="submit" :disabled="isBuilding || config.sources.length === 0" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+                            <i class="fas fa-play mr-2" x-show="!isBuilding"></i>
+                            <i class="fas fa-spinner fa-spin mr-2" x-show="isBuilding"></i>
+                            <span x-text="isBuilding ? 'Building Corpus...' : 'Build Corpus'"></span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Progress and Results -->
+                <div x-show="isBuilding || buildResult" class="mt-8 p-6 bg-gray-50 rounded-lg">
+                    <!-- Progress Indicator -->
+                    <div x-show="isBuilding" class="text-center">
+                        <div class="inline-flex items-center space-x-3">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                            <span class="text-lg font-medium text-gray-700">Building corpus, please wait...</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-2">This may take several minutes depending on the number of sources and results requested.</p>
+                    </div>
+
+                    <!-- Results -->
+                    <div x-show="buildResult && !isBuilding" class="space-y-4">
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">
+                            <i class="fas fa-chart-bar text-blue-600 mr-2"></i>Build Results
+                        </h3>
+                        
+                        <!-- Success/Error Indicator -->
+                        <div class="p-4 rounded-lg" :class="buildResult.success ? 'bg-green-100 border border-green-200' : 'bg-red-100 border border-red-200'">
+                            <div class="flex items-center">
+                                <i :class="buildResult.success ? 'fas fa-check-circle text-green-600' : 'fas fa-exclamation-triangle text-red-600'" class="text-2xl mr-3"></i>
+                                <div>
+                                    <h4 class="font-bold" :class="buildResult.success ? 'text-green-800' : 'text-red-800'" x-text="buildResult.success ? 'Corpus Built Successfully!' : 'Build Failed'"></h4>
+                                    <p class="text-sm" :class="buildResult.success ? 'text-green-700' : 'text-red-700'" x-show="buildResult.error" x-text="buildResult.error"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Statistics -->
+                        <div x-show="buildResult.success" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div class="bg-white p-4 rounded-lg border border-gray-200 text-center">
+                                <p class="text-2xl font-bold text-blue-600" x-text="buildResult.total_documents || '0'"></p>
+                                <p class="text-sm text-gray-600">Total Found</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg border border-gray-200 text-center">
+                                <p class="text-2xl font-bold text-green-600" x-text="buildResult.processed_documents || '0'"></p>
+                                <p class="text-sm text-gray-600">Processed</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg border border-gray-200 text-center">
+                                <p class="text-2xl font-bold text-purple-600" x-text="buildResult.filtered_documents || '0'"></p>
+                                <p class="text-sm text-gray-600">High Quality</p>
+                            </div>
+                            <div class="bg-white p-4 rounded-lg border border-gray-200 text-center">
+                                <p class="text-2xl font-bold text-orange-600" x-text="Math.round(buildResult.processing_time) || '0'"></p>
+                                <p class="text-sm text-gray-600">Seconds</p>
+                            </div>
+                        </div>
+
+                        <!-- Output Files -->
+                        <div x-show="buildResult.output_files && buildResult.output_files.length > 0" class="bg-white p-4 rounded-lg border border-gray-200">
+                            <h4 class="font-bold text-gray-800 mb-2">
+                                <i class="fas fa-file-alt text-blue-600 mr-2"></i>Output Files
+                            </h4>
+                            <ul class="space-y-1">
+                                <template x-for="file in buildResult.output_files" :key="file">
+                                    <li class="text-sm text-gray-600 font-mono bg-gray-50 px-2 py-1 rounded" x-text="file"></li>
+                                </template>
+                            </ul>
+                        </div>
+
+                        <!-- Recommendations -->
+                        <div x-show="buildResult.recommendations && buildResult.recommendations.length > 0" class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <h4 class="font-bold text-blue-800 mb-2">
+                                <i class="fas fa-lightbulb text-blue-600 mr-2"></i>Recommendations
+                            </h4>
+                            <ul class="space-y-1">
+                                <template x-for="recommendation in buildResult.recommendations" :key="recommendation">
+                                    <li class="text-sm text-blue-700 flex items-start">
+                                        <i class="fas fa-arrow-right text-blue-500 mr-2 mt-1 text-xs"></i>
+                                        <span x-text="recommendation"></span>
+                                    </li>
+                                </template>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function corpusBuilder() {
+            return {
+                status: {},
+                isBuilding: false,
+                buildResult: null,
+                config: {
+                    sources: ['pubmed'],
+                    max_results: 500,
+                    years_back: 5,
+                    min_relevance: 15.0,
+                    min_quality: 0.5,
+                    remove_duplicates: true,
+                    extract_entities: true,
+                    calculate_statistics: true,
+                    include_metadata: true
+                },
+                availableSources: [
+                    { id: 'pubmed', name: 'PubMed', description: 'NCBI PubMed biomedical literature database' },
+                    { id: 'clinical_trials', name: 'Clinical Trials', description: 'ClinicalTrials.gov clinical trial registry' },
+                    { id: 'openfda', name: 'OpenFDA', description: 'FDA drug and device safety data' },
+                    { id: 'europepmc', name: 'Europe PMC', description: 'European life sciences literature' },
+                    { id: 'who_gho', name: 'WHO GHO', description: 'WHO Global Health Observatory data' }
+                ],
+
+                async checkStatus() {
+                    try {
+                        const response = await fetch('/api/corpus/status');
+                        if (response.ok) {
+                            this.status = await response.json();
+                        } else {
+                            console.error('Failed to fetch status');
+                        }
+                    } catch (error) {
+                        console.error('Error checking status:', error);
+                    }
+                },
+
+                async buildCorpus() {
+                    this.isBuilding = true;
+                    this.buildResult = null;
+
+                    try {
+                        const response = await fetch('/api/corpus/build', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(this.config)
+                        });
+
+                        this.buildResult = await response.json();
+                    } catch (error) {
+                        this.buildResult = {
+                            success: false,
+                            error: 'Network error: ' + error.message
+                        };
+                    } finally {
+                        this.isBuilding = false;
+                    }
+                },
+
+                init() {
+                    this.checkStatus();
+                }
+            }
+        }
+    </script>
+</body>
+</html>

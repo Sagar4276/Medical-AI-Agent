@@ -1,0 +1,163 @@
+# Glaucoma
+
+## Overview
+Glaucoma is a group of eye conditions that damage the optic nerve, which is vital to good vision. This damage is often caused by abnormally high pressure in the eye, known as intraocular pressure (IOP).
+
+## Types of Glaucoma
+
+### Primary Open-Angle Glaucoma
+The most common form of glaucoma, accounting for about 90% of all cases. In this condition, the drainage canals become clogged over time, causing increased eye pressure and gradual vision loss.
+
+### Angle-Closure Glaucoma
+Also called narrow-angle or closed-angle glaucoma, this type occurs when the iris blocks the drainage angle, causing a sudden buildup of pressure in the eye. This is considered a medical emergency.
+
+### Normal-Tension Glaucoma
+A form of open-angle glaucoma where optic nerve damage occurs despite normal eye pressure levels. The exact cause is unknown, but may involve poor blood flow to the optic nerve.
+
+### Secondary Glaucoma
+Glaucoma that develops as a result of another eye condition, injury, or medical treatment. Causes include eye trauma, certain medications, and other eye diseases.
+
+## Symptoms
+Early-stage glaucoma often has no symptoms, earning it the nickname "the silent thief of sight." As the condition progresses, symptoms may include:
+
+- Gradual loss of peripheral vision
+- Tunnel vision in advanced stages
+- Eye pain (in acute angle-closure glaucoma)
+- Headaches
+- Blurred vision
+- Halos around lights
+- Nausea and vomiting (in acute cases)
+
+## Risk Factors
+- Age over 60
+- Family history of glaucoma
+- High intraocular pressure
+- Thin corneas
+- Diabetes
+- High blood pressure
+- Heart disease
+- Hypothyroidism
+- Previous eye injury
+- Long-term corticosteroid use
+- Certain ethnicities (African American, Hispanic, Asian)
+
+## Diagnosis
+Glaucoma diagnosis involves several tests:
+
+### Tonometry
+Measures intraocular pressure using methods such as:
+- Goldmann applanation tonometry (gold standard)
+- Non-contact tonometry (air puff test)
+- Dynamic contour tonometry
+
+### Ophthalmoscopy
+Visual examination of the optic nerve head to assess:
+- Cup-to-disc ratio
+- Optic nerve fiber layer thickness
+- Signs of optic nerve damage
+
+### Perimetry (Visual Field Testing)
+Tests for vision loss in peripheral vision using:
+- Standard automated perimetry (SAP)
+- Frequency doubling technology (FDT)
+- Short wavelength automated perimetry (SWAP)
+
+### Optical Coherence Tomography (OCT)
+Advanced imaging technique that measures:
+- Retinal nerve fiber layer (RNFL) thickness
+- Ganglion cell complex thickness
+- Optic nerve head parameters
+
+### Gonioscopy
+Examination of the drainage angle to differentiate between open-angle and angle-closure glaucoma.
+
+### Pachymetry
+Measurement of central corneal thickness, which affects IOP readings and glaucoma risk assessment.
+
+## Treatment
+
+### Medications
+First-line treatment typically involves topical eye drops:
+
+#### Prostaglandin Analogs
+- Latanoprost (Xalatan)
+- Travoprost (Travatan)
+- Bimatoprost (Lumigan)
+- Tafluprost (Zioptan)
+
+#### Beta-Blockers
+- Timolol (Timoptic)
+- Betaxolol (Betoptic)
+- Levobunolol (Betagan)
+
+#### Alpha-Adrenergic Agonists
+- Brimonidine (Alphagan)
+- Apraclonidine (Iopidine)
+
+#### Carbonic Anhydrase Inhibitors
+- Dorzolamide (Trusopt)
+- Brinzolamide (Azopt)
+- Acetazolamide (Diamox) - oral
+
+#### Cholinergic Agents
+- Pilocarpine (Isopto Carpine)
+- Carbachol
+
+### Laser Therapy
+
+#### Laser Trabeculoplasty
+- Selective laser trabeculoplasty (SLT)
+- Argon laser trabeculoplasty (ALT)
+
+#### Laser Peripheral Iridotomy
+Used for angle-closure glaucoma prevention and treatment.
+
+#### Cyclophotocoagulation
+Destroys ciliary body tissue to reduce aqueous humor production.
+
+### Surgical Procedures
+
+#### Trabeculectomy
+Creates a new drainage channel to bypass the blocked natural drainage system.
+
+#### Glaucoma Drainage Devices
+- Ahmed glaucoma valve
+- Baerveldt glaucoma implant
+- Molteno implant
+
+#### Minimally Invasive Glaucoma Surgery (MIGS)
+- iStent
+- Trabectome
+- Xen gel stent
+- Kahook dual blade
+
+## Prognosis and Management
+Early detection and treatment are crucial for preserving vision. With proper management:
+- Disease progression can be slowed or halted
+- Most patients maintain functional vision
+- Regular monitoring is essential
+- Compliance with medication regimens is critical
+
+## Prevention
+While glaucoma cannot always be prevented, regular eye examinations can lead to early detection and treatment:
+- Annual eye exams for high-risk individuals
+- Comprehensive eye exams every 2-3 years for adults over 40
+- Immediate medical attention for sudden eye pain or vision changes
+
+## Research and Future Directions
+Current research focuses on:
+- Neuroprotective therapies
+- Gene therapy approaches
+- Novel drug delivery systems
+- Advanced imaging techniques
+- Artificial intelligence in diagnosis and monitoring
+- Stem cell therapy for optic nerve regeneration
+
+## Quality of Life Considerations
+Living with glaucoma involves:
+- Adapting to vision changes
+- Ensuring medication compliance
+- Regular follow-up appointments
+- Lifestyle modifications for safety
+- Support groups and counseling resources
+- Low vision aids and rehabilitation services

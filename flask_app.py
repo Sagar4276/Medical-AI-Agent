@@ -15,6 +15,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 # Import the RAG system
 from proper_medical_rag import ProperMedicalRAG, MedicalRAGResult
+from corpus import GlaucomaCorpusBuilder, CorpusBuilderConfig, APIAuthManager
 
 app = Flask(__name__)
 
@@ -106,6 +107,113 @@ def health_check():
         'status': 'healthy',
         'rag_initialized': rag_system is not None
     })
+
+@app.route('/api/corpus/build', methods=['POST'])
+def build_corpus():
+    """Build glaucoma research corpus endpoint"""
+    try:
+        data = request.get_json() or {}
+        
+        # Create configuration from request
+        config = CorpusBuilderConfig(
+            enabled_sources=data.get('sources', ['pubmed']),
+            max_results_per_source=data.get('max_results', 100),
+            search_years_back=data.get('years_back', 5),
+            min_relevance_score=data.get('min_relevance', 15.0),
+            min_quality_score=data.get('min_quality', 0.5),
+            remove_duplicates=data.get('remove_duplicates', True),
+            extract_entities=data.get('extract_entities', True),
+            calculate_statistics=data.get('calculate_statistics', True),
+            output_directory=data.get('output_dir', './data/glaucoma_corpus'),
+            export_formats=data.get('formats', ['json']),
+            include_metadata=data.get('include_metadata', True),
+            max_concurrent_requests=data.get('concurrent_requests', 3),
+            request_delay=data.get('request_delay', 1.0),
+            timeout_seconds=data.get('timeout', 30)
+        )
+        
+        # Build corpus
+        with GlaucomaCorpusBuilder(config) as builder:
+            result = builder.build_corpus(
+                custom_search_terms=data.get('custom_terms'),
+                subtopics=data.get('subtopics')
+            )
+            
+            return jsonify({
+                'success': result.success,
+                'total_documents': result.total_documents,
+                'processed_documents': result.processed_documents,
+                'filtered_documents': result.filtered_documents,
+                'sources_used': result.sources_used,
+                'processing_time': result.processing_time,
+                'output_files': result.output_files,
+                'error_summary': result.error_summary,
+                'recommendations': result.recommendations,
+                'statistics': result.statistics.__dict__ if result.statistics else None
+            })
+            
+    except Exception as e:
+        logger.error(f"Corpus building failed: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'error_type': type(e).__name__
+        }), 500
+
+@app.route('/api/corpus/status')
+def corpus_status():
+    """Get corpus builder status and health"""
+    try:
+        auth_manager = APIAuthManager()
+        
+        # Get available APIs
+        available_apis = auth_manager.list_available_apis()
+        
+        # Test API connections
+        api_status = {}
+        for api in available_apis:
+            if api['available']:
+                try:
+                    is_healthy = auth_manager.test_credential(api['name'])
+                    api_status[api['name']] = {
+                        'configured': True,
+                        'healthy': is_healthy,
+                        'description': api.get('description', '')
+                    }
+                except Exception as e:
+                    api_status[api['name']] = {
+                        'configured': True,
+                        'healthy': False,
+                        'error': str(e),
+                        'description': api.get('description', '')
+                    }
+            else:
+                api_status[api['name']] = {
+                    'configured': False,
+                    'healthy': False,
+                    'description': api.get('description', ''),
+                    'env_key': api.get('env_key', '')
+                }
+        
+        return jsonify({
+            'success': True,
+            'api_status': api_status,
+            'total_apis': len(available_apis),
+            'configured_apis': sum(1 for api in available_apis if api['available']),
+            'healthy_apis': sum(1 for status in api_status.values() if status.get('healthy', False))
+        })
+        
+    except Exception as e:
+        logger.error(f"Status check failed: {e}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+@app.route('/corpus')
+def corpus_interface():
+    """Serve corpus builder interface"""
+    return render_template('corpus_builder.html')
 
 if __name__ == '__main__':
     print("🏥 Starting Medical RAG Flask Server...")
